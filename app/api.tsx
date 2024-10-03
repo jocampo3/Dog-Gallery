@@ -6,20 +6,17 @@ export type Dog = {
     subBreeds: string[];
 };
 
-// Function to fetch the breeds
+// Fetches the list of dog breeds
 export const getDogs = async (): Promise<Dog[]> => {
     try {
         const response = await fetch('https://dog.ceo/api/breeds/list/all');
         const json = await response.json();
-
-        const breedsArray = Object.entries(json.message).map(([breed, subBreeds]) => ({
+        return Object.entries(json.message).map(([breed, subBreeds]) => ({
             breed,
-            subBreeds: subBreeds as string[],  // Cast subBreeds to an array of strings
+            subBreeds: subBreeds as string[],
         }));
-
-        return breedsArray;
     } catch (error) {
-        console.error(error);
+        console.error("Error fetching dog breeds:", error);
         throw error;
     }
 };
@@ -31,73 +28,53 @@ export const useDogGallery = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const breedsArray = await getDogs();
-            setData(breedsArray);
+            try {
+                const breedsArray = await getDogs();
+                setData(breedsArray);
+            } catch (error) {
+                console.error("Error setting dog data:", error);
+            }
         };
         fetchData();
     }, []);
 
     const toggleBreedSelection = (breed: string, subBreed?: string) => {
-        const selection = subBreed ? `${breed}-${subBreed}` : breed;  // Store breed-subBreed or just breed
-    
-        setSelectedBreeds((prevSelectedBreeds) => {
-            if (prevSelectedBreeds.includes(selection)) {
-                return prevSelectedBreeds.filter((selectedBreed) => selectedBreed !== selection);
-            } else {
-                return [...prevSelectedBreeds, selection];
-            }
-        });
+        const selection = subBreed ? `${breed}-${subBreed}` : breed;
+        setSelectedBreeds((prevSelectedBreeds) =>
+            prevSelectedBreeds.includes(selection)
+                ? prevSelectedBreeds.filter((selectedBreed) => selectedBreed !== selection)
+                : [...prevSelectedBreeds, selection]
+        );
     };
-    
 
-    // Function to generate URLs for breeds and subbreeds
     const generateSelectedBreedsUrl = () => {
-        const urls = [];
-    
-        selectedBreeds.forEach((selection) => {
+        const urls = selectedBreeds.map((selection) => {
             const [breed, subBreed] = selection.includes('-') ? selection.split('-') : [selection];
-    
-            // If a subbreed is selected, generate the breed/subbreed URL
-            if (subBreed) {
-                const url = `https://dog.ceo/api/breed/${breed}/${subBreed}/images/random/30`;
-                urls.push(url);
-            } 
-            // Otherwise, generate the URL for the main breed
-            else {
-                const url = `https://dog.ceo/api/breed/${breed}/images/random/30`;
-                urls.push(url);
-            }
+            return subBreed
+                ? `https://dog.ceo/api/breed/${breed}/${subBreed}/images/random/30`
+                : `https://dog.ceo/api/breed/${breed}/images/random/30`;
         });
-    
-        console.log("Generated URLs: ", urls);
-    
-        if (urls.length === 0) {
-            console.log("No dog breeds selected!");
-        }
-    
+
+        if (!urls.length) console.log("No dog breeds selected!");
         return urls;
     };
-    
 
     const fetchImages = async (): Promise<string[]> => {
         const urls = generateSelectedBreedsUrl();
-
-        if (urls.length === 0) {
-            alert('Please select at least one breed');
-            return [];
-        }
+        if (!urls.length) return [];
 
         const allImages: string[] = [];
-
-        for (const url of urls) {
-            try {
-                const response = await fetch(url);
-                const json = await response.json();
-                allImages.push(...json.message);  // Flatten array by spreading json.message
-            } catch (error) {
-                console.error("Error fetching images for", url, error);
-            }
-        }
+        await Promise.all(
+            urls.map(async (url) => {
+                try {
+                    const response = await fetch(url);
+                    const json = await response.json();
+                    allImages.push(...json.message);
+                } catch (error) {
+                    console.error("Error fetching images for", url, error);
+                }
+            })
+        );
         return allImages;
     };
 
@@ -105,6 +82,6 @@ export const useDogGallery = () => {
         data,
         selectedBreeds,
         toggleBreedSelection,
-        fetchImages
+        fetchImages,
     };
 };

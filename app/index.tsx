@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { GalleryScreen, ImagesScreen } from './DogGallery';
+import { BreedScreen } from './pages/breeds';
+import { GalleryScreen } from './pages/gallery';
 
 const App = () => {
     const [currentScreen, setCurrentScreen] = useState('Gallery');
     const [fetchedImages, setFetchedImages] = useState<string[]>([]);
 
     // Navigate to Images Screen after fetching images
-    const navigateToImages = (images) => {
+    const navigateToImages = (images: React.SetStateAction<string[]>) => {
         setFetchedImages(images); // Store fetched images
         setCurrentScreen('Images'); // Navigate to Images Screen
     };
@@ -18,9 +19,9 @@ const App = () => {
     return (
         <>
             {currentScreen === 'Gallery' ? (
-                <GalleryScreen navigateToImages={navigateToImages} />
+                <BreedScreen navigateToImages={navigateToImages} />
             ) : (
-                <ImagesScreen goBack={goBack} images={fetchedImages} />
+                <GalleryScreen goBack={goBack} images={fetchedImages}/>
             )}
         </>
     );
