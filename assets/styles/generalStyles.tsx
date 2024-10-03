@@ -1,23 +1,33 @@
 import {StyleSheet} from "react-native";
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        padding: 10,
+    },
+    nameContainer: {
+        margin: "auto",
+        padding: 0
+    },
     breedName: {
+        margin: "auto",
+        width: "auto",
+        padding: 10,
         backgroundColor: 'lightblue',
         borderRadius: 50,
         textTransform: 'capitalize',
-        fontSize: 16,
-        margin: 5,
-        padding: 10,
         textAlign: 'center',
+        fontSize: 20,
     },
     subBreedName: {
+        margin: "auto",
+        width: "auto",
+        padding: 10,
         backgroundColor: 'lightgreen',
         borderRadius: 50,
         textTransform: 'capitalize',
-        fontSize: 16,
-        margin: 5,
-        padding: 10,
         textAlign: 'center',
+        fontSize: 15,
     },
     selectedBreed: {
         backgroundColor: 'orange',
@@ -30,10 +40,6 @@ const styles = StyleSheet.create({
         marginRight: 30,
         marginBottom: 10,
     },
-    container: {
-        flex: 1,
-        padding: 10,
-    },
     button: {
         backgroundColor: 'darkblue',
         padding: 10,
@@ -45,6 +51,9 @@ const styles = StyleSheet.create({
     buttonText: {
         color: 'white',
         fontSize: 16,
+    },
+    imageContainer: {
+        margin: "auto"
     },
 });
 
